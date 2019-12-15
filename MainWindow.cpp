@@ -9,27 +9,14 @@
 #include <QImage>
 #include <QDebug>
 #include <QRgb>
+#include <memory>
+#include <stdlib.h>
 
 #include <algorithm>
 #include <future>
 
 int dec265main(int argc, char** argv, HevcReader *hevcreader, YuvWriter *yuvWriter);
 
-namespace  {
-
-struct __attribute__ ((packed)) ImageMetaData
-{
-   uint32_t FrameStartSec;
-   uint32_t FrameStartUsec;
-   uint16_t HSize;
-   uint16_t VSize;
-   uint32_t FrameNumber;
-   uint32_t Sevent;
-   uint32_t FrameEndSec;
-   uint32_t FrameEndUsec;
-   uint32_t Unused;
-};
-}
 MainWindow::MainWindow(QWidget *parent)
    : QMainWindow(parent)
    , ui(new Ui::MainWindow)
@@ -134,9 +121,6 @@ void MainWindow::LoadYuvImage(const uint8_t *yuv, size_t sz) const
    }
 
    emit updateFrame(img);
-
-  static int frame = 0;
-  qDebug() << "Frame " << frame++;
 }
 
 void MainWindow::LoadRawImage() const
@@ -156,10 +140,8 @@ void MainWindow::LoadRawImage() const
 
    char metadata[256];
    size_t sz = file.size();
-   file.read(metadata, sizeof(metadata));
-   ImageMetaData *metaptr = (ImageMetaData*)metadata;
-   int width = metaptr->HSize;
-   int height = metaptr->VSize;
+   int width = ui->lineEditWidth->text().toInt();
+   int height = ui->lineEditHeight->text().toInt();
    QImage img(width, height, QImage::Format::Format_RGB888);
    for(int x = 0; x < width; ++x)
    {

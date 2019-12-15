@@ -1,6 +1,7 @@
 #include "UdpServer.h"
 
 #include <QImage>
+#include <QDebug>
 
 #include <stdio.h>
 #include <errno.h>
@@ -112,6 +113,7 @@ bool UdpServer::ParseJpegFrame(std::vector<unsigned char> &data) const
    }
    return true;
 }
+
 int UdpServer::Server(std::vector<unsigned char> &data) const
 {
   int sock;
@@ -157,12 +159,8 @@ int UdpServer::Server(std::vector<unsigned char> &data) const
       fprintf(stderr, "[%i] %s\n", err, strerror(err));
       exit(EXIT_FAILURE);
     }
+    qDebug() << "datagram: " << recsize;
     emit receivedData(buffer, recsize);
-//    for(unsigned int i = 0; i < recsize; ++i)
-//    {
-//       data.push_back(buffer[i]);
-//    }
-//    ParseJpegFrame(data);
-    printf("datagram: %i\n", (int)recsize);
+
   }
 }
